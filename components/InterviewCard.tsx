@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import DisplayTechIcons from "./DisplayTechIcons";
 
 import { cn, getRandomInterviewCover } from "@/lib/utils";
-import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
+import { getAllFeedbacksByInterviewId } from "@/lib/actions/general.action";
 
 const InterviewCard = async ({
   interviewId,
@@ -16,13 +16,32 @@ const InterviewCard = async ({
   techstack,
   createdAt,
 }: InterviewCardProps) => {
-  const feedback =
-    userId && interviewId
-      ? await getFeedbackByInterviewId({
-          interviewId,
-          userId,
-        })
-      : null;
+  let highestScore = null;
+  let latestFeedback = null;
+  let attemptCount = 0;
+  
+  if (userId && interviewId) {
+    // Get all feedbacks for this interview
+    const allFeedbacks = await getAllFeedbacksByInterviewId({
+      interviewId,
+      userId,
+    });
+    
+    attemptCount = allFeedbacks.length;
+    
+    if (allFeedbacks.length > 0) {
+      // Get the latest feedback
+      const sortedFeedbacks = allFeedbacks.sort((a: Feedback, b: Feedback) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      
+      latestFeedback = sortedFeedbacks[0];
+      
+      // Find the highest score
+      highestScore = allFeedbacks.reduce((max, feedback) => 
+        Math.max(max, feedback.totalScore), 0);
+    }
+  }
 
   const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
 
@@ -34,7 +53,7 @@ const InterviewCard = async ({
     }[normalizedType] || "bg-light-600";
 
   const formattedDate = dayjs(
-    feedback?.createdAt || createdAt || Date.now()
+    latestFeedback?.createdAt || createdAt || Date.now()
   ).format("MMM D, YYYY");
 
   return (
@@ -77,13 +96,20 @@ const InterviewCard = async ({
 
             <div className="flex flex-row gap-2 items-center">
               <Image src="/star.svg" width={22} height={22} alt="star" />
-              <p>{feedback?.totalScore || "---"}/100</p>
+              <p>{highestScore !== null ? `${highestScore}/100` : "---/100"}</p>
             </div>
           </div>
 
+          {/* Number of Attempts */}
+          {latestFeedback && (
+            <div className="mt-2 text-sm text-primary-200">
+              {attemptCount} attempt{attemptCount !== 1 ? 's' : ''}
+            </div>
+          )}
+
           {/* Feedback or Placeholder Text */}
           <p className="line-clamp-2 mt-5">
-            {feedback?.finalAssessment ||
+            {latestFeedback?.finalAssessment ||
               "You haven't taken this interview yet. Take it now to improve your skills."}
           </p>
         </div>
@@ -94,12 +120,12 @@ const InterviewCard = async ({
           <Button className="btn-primary">
             <Link
               href={
-                feedback
+                latestFeedback
                   ? `/interview/${interviewId}/feedback`
                   : `/interview/${interviewId}`
               }
             >
-              {feedback ? "Check Feedback" : "View Interview"}
+              {latestFeedback ? "Check Feedback" : "View Interview"}
             </Link>
           </Button>
         </div>
@@ -109,3 +135,4 @@ const InterviewCard = async ({
 };
 
 export default InterviewCard;
+
