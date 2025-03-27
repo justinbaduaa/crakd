@@ -28,6 +28,7 @@ const Agent = ({
   feedbackId,
   type,
   questions,
+  isRetake = false,
 }: AgentProps) => {
   const router = useRouter();
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -90,11 +91,12 @@ const Agent = ({
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
       console.log("handleGenerateFeedback");
 
+      // Pass feedbackId only if this is not a retake
       const { success, feedbackId: id } = await createFeedback({
         interviewId: interviewId!,
         userId: userId!,
         transcript: messages,
-        feedbackId,
+        feedbackId: isRetake ? undefined : feedbackId,
       });
 
       if (success && id) {
@@ -112,7 +114,7 @@ const Agent = ({
         handleGenerateFeedback(messages);
       }
     }
-  }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
+  }, [messages, callStatus, feedbackId, interviewId, router, type, userId, isRetake]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
