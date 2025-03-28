@@ -9,7 +9,7 @@ import {
   getInterviewById,
 } from "@/lib/actions/general.action";
 import { getCurrentUser } from "@/lib/actions/auth.action";
-import DisplayTechIcons from "@/components/DisplayTechIcons";
+import DisplaySkillIcons from "@/components/DisplaySkillIcons";
 
 const InterviewDetails = async ({ params, searchParams }: {
   params: RouteParams['params'];
@@ -46,10 +46,10 @@ const InterviewDetails = async ({ params, searchParams }: {
             <h3 className="capitalize">{interview.role} Interview</h3>
           </div>
 
-          <DisplayTechIcons techStack={interview.techstack} />
+          <DisplaySkillIcons skills={interview.techstack} />
         </div>
 
-        <p className="bg-dark-200 px-4 py-2 rounded-lg h-fit">
+        <p className="bg-[#f4ebdd] text-dark-100 font-medium px-4 py-2 rounded-lg h-fit">
           {interview.type}
         </p>
       </div>

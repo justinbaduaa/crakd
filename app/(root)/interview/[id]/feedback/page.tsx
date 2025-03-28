@@ -16,7 +16,8 @@ const Feedback = async ({ params, searchParams }: {
   searchParams: { tab?: string; feedbackId?: string };
 }) => {
   const { id } = await params;
-  const activeTab = searchParams.tab || "latest";
+  const { tab, feedbackId } = await searchParams;
+  const activeTab = tab || "latest";
   const user = await getCurrentUser();
 
   const interview = await getInterviewById(id);
@@ -47,7 +48,7 @@ const Feedback = async ({ params, searchParams }: {
     : null;
 
   // If a specific feedback ID is requested, find that feedback
-  const selectedFeedbackId = searchParams.feedbackId;
+  const selectedFeedbackId = feedbackId;
   const selectedFeedback = selectedFeedbackId
     ? sortedFeedbacks.find((f: Feedback) => f.id === selectedFeedbackId) || latestFeedback
     : latestFeedback;

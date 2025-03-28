@@ -95,6 +95,6 @@ interface InterviewFormProps {
   amount: number;
 }
 
-interface TechIconProps {
-  techStack: string[];
+interface SkillIconProps {
+  skills: string[];
 }

@@ -1,18 +1,20 @@
-import Agent from "@/components/Agent";
+import InterviewOptions from "@/components/InterviewOptions";
 import { getCurrentUser } from "@/lib/actions/auth.action";
+import { redirect } from "next/navigation";
 
 const Page = async () => {
   const user = await getCurrentUser();
+  
+  // Redirect if user is not authenticated
+  if (!user || !user.name) redirect("/");
 
   return (
     <>
-      <h3>Interview generation</h3>
+      <h3>Interview Practice</h3>
 
-      <Agent
-        userName={user?.name!}
-        userId={user?.id}
-        profileImage={user?.profileURL}
-        type="generate"
+      <InterviewOptions
+        userName={user.name}
+        userId={user.id}
       />
     </>
   );

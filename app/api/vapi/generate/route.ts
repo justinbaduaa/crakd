@@ -5,31 +5,53 @@ import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-  const { type, role, level, techstack, amount, userid } = await request.json();
-
   try {
+    const { type, role, level, techstack, amount, userid, profession, additionalInfo } = await request.json();
+
+    // Default values for required fields
+    const interviewRole = role || "General";
+    const interviewType = type || "Mixed";
+    const experienceLevel = level || "Mid-level";
+    const skillsArray = techstack ? techstack.split(',').map((skill: string) => skill.trim()).filter(Boolean) : [];
+    const questionAmount = amount !== undefined ? Number(amount) : 5;
+    
+    // Build the prompt based on the profession and provided information
+    let promptContext = `Prepare questions for a job interview.`;
+    
+    if (profession) {
+      promptContext += `\nThe profession is ${profession}.`;
+    }
+    
+    promptContext += `
+      The job role is ${interviewRole}.
+      The job experience level is ${experienceLevel}.
+      ${skillsArray.length > 0 ? `The key skills/requirements for this job are: ${skillsArray.join(', ')}.` : ''}
+      The focus should be on ${interviewType} questions.
+      The amount of questions required is: ${questionAmount}.`;
+      
+    if (additionalInfo) {
+      promptContext += `\nAdditional context: ${additionalInfo}`;
+    }
+    
+    promptContext += `
+      Please return only the questions, without any additional text.
+      The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
+      Return the questions formatted like this:
+      ["Question 1", "Question 2", "Question 3"]
+      
+      Thank you!
+    `;
+
     const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
-      prompt: `Prepare questions for a job interview.
-        The job role is ${role}.
-        The job experience level is ${level}.
-        The tech stack used in the job is: ${techstack}.
-        The focus between behavioural and technical questions should lean towards: ${type}.
-        The amount of questions required is: ${amount}.
-        Please return only the questions, without any additional text.
-        The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
-        Return the questions formatted like this:
-        ["Question 1", "Question 2", "Question 3"]
-        
-        Thank you! <3
-    `,
+      prompt: promptContext,
     });
 
     const interview = {
-      role: role,
-      type: type,
-      level: level,
-      techstack: techstack.split(","),
+      role: interviewRole,
+      type: interviewType,
+      level: experienceLevel,
+      techstack: skillsArray,
       questions: JSON.parse(questions),
       userId: userid,
       finalized: true,

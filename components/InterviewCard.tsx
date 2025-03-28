@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { Button } from "./ui/button";
-import DisplayTechIcons from "./DisplayTechIcons";
+import DisplaySkillIcons from "./DisplaySkillIcons";
 
 import { cn, getRandomInterviewCover } from "@/lib/utils";
 import { getAllFeedbacksByInterviewId } from "@/lib/actions/general.action";
@@ -13,7 +13,7 @@ const InterviewCard = async ({
   userId,
   role,
   type,
-  techstack,
+  techstack: skills,
   createdAt,
 }: InterviewCardProps) => {
   let highestScore = null;
@@ -50,6 +50,8 @@ const InterviewCard = async ({
       Behavioral: "bg-[#9CA3AF]",
       Mixed: "bg-[#9CA3AF]",
       Technical: "bg-[#9CA3AF]",
+      "Case Study": "bg-[#9CA3AF]",
+      Situational: "bg-[#9CA3AF]",
     }[normalizedType] || "bg-[#9CA3AF]";
 
   const formattedDate = dayjs(
@@ -80,7 +82,7 @@ const InterviewCard = async ({
           />
 
           {/* Interview Role */}
-          <h3 className="mt-5 capitalize">{role} Interview</h3>
+          <h3 className="mt-5 capitalize">{role} Position</h3>
 
           {/* Date & Score */}
           <div className="flex flex-row gap-5 mt-3">
@@ -110,12 +112,12 @@ const InterviewCard = async ({
           {/* Feedback or Placeholder Text */}
           <p className="line-clamp-2 mt-5">
             {latestFeedback?.finalAssessment ||
-              "You haven't taken this interview yet. Take it now to improve your skills."}
+              "You haven't practiced this interview yet. Start now to improve your skills."}
           </p>
         </div>
 
         <div className="flex flex-row justify-between">
-          <DisplayTechIcons techStack={techstack} />
+          <DisplaySkillIcons skills={skills} />
 
           <Button className="btn-primary">
             <Link
@@ -126,7 +128,7 @@ const InterviewCard = async ({
               }
               className="flex items-center"
             >
-              {latestFeedback ? "Check Feedback" : "View Interview"}
+              {latestFeedback ? "View Feedback" : "Practice Now"}
             </Link>
           </Button>
         </div>

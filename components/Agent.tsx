@@ -43,6 +43,7 @@ const Agent = ({
     };
 
     const onCallEnd = () => {
+      console.log("Call ended");
       setCallStatus(CallStatus.FINISHED);
     };
 
@@ -65,6 +66,12 @@ const Agent = ({
 
     const onError = (error: Error) => {
       console.log("Error:", error);
+      if (error.message && error.message.includes("Meeting ended")) {
+        console.log("Meeting ended gracefully");
+        setCallStatus(CallStatus.FINISHED);
+      } else {
+        setError(`Error: ${error.message || "Unknown error occurred"}`);
+      }
     };
 
     vapi.on("call-start", onCallStart);
@@ -132,6 +139,7 @@ const Agent = ({
           variableValues: {
             username: userName,
             userid: userId,
+            questionsAmount: 5, // Default to 5 questions
           },
         });
       } else {
@@ -159,6 +167,22 @@ const Agent = ({
     setCallStatus(CallStatus.FINISHED);
     vapi.stop();
   };
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
+    
+    if (callStatus === CallStatus.CONNECTING) {
+      timeoutId = setTimeout(() => {
+        console.log("Connection timeout - resetting state");
+        setCallStatus(CallStatus.INACTIVE);
+        setError("Connection timed out. Please try again.");
+      }, 10000);
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [callStatus]);
 
   return (
     <>
