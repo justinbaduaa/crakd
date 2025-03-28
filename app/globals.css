@@ -200,15 +200,15 @@
     @apply w-full;
 
     .label {
-      @apply !text-light-100 !font-normal;
+      @apply !text-dark-100 !font-medium;
     }
 
     .input {
-      @apply !bg-dark-200 !rounded-full !min-h-12 !px-5 placeholder:!text-light-100;
+      @apply !bg-white !rounded-full !min-h-12 !px-5 placeholder:!text-gray-400 border border-gray-200 text-dark-100 focus:border-[#6870A6] focus:ring-[#6870A6];
     }
 
     .btn {
-      @apply !w-full !bg-primary-200 !text-dark-100 hover:!bg-primary-200/80 !rounded-full !min-h-10 !font-bold !px-5 cursor-pointer;
+      @apply !w-full !bg-[#F4EBDD] !text-dark-100 hover:!bg-[#F4EBDD]/80 !rounded-full !min-h-10 !font-bold !px-5 cursor-pointer shadow-sm transition-all duration-200 hover:shadow-md;
     }
   }
 
@@ -265,7 +265,7 @@
   }
 
   .auth-layout {
-    @apply flex items-center justify-center mx-auto max-w-7xl min-h-screen max-sm:px-4 max-sm:py-8;
+    @apply flex items-center justify-center mx-auto max-w-7xl min-h-screen max-sm:px-4 max-sm:py-8 bg-[#FDFBF9];
   }
 
   .root-layout {
