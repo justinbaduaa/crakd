@@ -12,7 +12,7 @@ const Layout = async ({ children }: { children: ReactNode }) => {
   return (
     <div className="root-layout">
       <nav>
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2" prefetch={false}>
           <Image src="/logoBlack.svg" alt="MockMate Logo" width={38} height={32} />
           <h2 className="font-poppins font-black text-dark-100">CRAKD</h2>
         </Link>
