@@ -47,10 +47,10 @@ const InterviewCard = async ({
 
   const badgeColor =
     {
-      Behavioral: "bg-light-400",
-      Mixed: "bg-light-600",
-      Technical: "bg-light-800",
-    }[normalizedType] || "bg-light-600";
+      Behavioral: "bg-[#9CA3AF]",
+      Mixed: "bg-[#9CA3AF]",
+      Technical: "bg-[#9CA3AF]",
+    }[normalizedType] || "bg-[#9CA3AF]";
 
   const formattedDate = dayjs(
     latestFeedback?.createdAt || createdAt || Date.now()
@@ -63,11 +63,11 @@ const InterviewCard = async ({
           {/* Type Badge */}
           <div
             className={cn(
-              "absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg",
+              "absolute top-2 right-2 w-fit px-4 py-1.5 rounded-full shadow-sm bg-opacity-85",
               badgeColor
             )}
           >
-            <p className="badge-text ">{normalizedType}</p>
+            <p className="badge-text">{normalizedType}</p>
           </div>
 
           {/* Cover Image */}
@@ -76,7 +76,7 @@ const InterviewCard = async ({
             alt="cover-image"
             width={90}
             height={90}
-            className="rounded-full object-fit size-[90px]"
+            className="rounded-full object-fit size-[90px] shadow-md"
           />
 
           {/* Interview Role */}
@@ -102,7 +102,7 @@ const InterviewCard = async ({
 
           {/* Number of Attempts */}
           {latestFeedback && (
-            <div className="mt-2 text-sm text-primary-200">
+            <div className="mt-2 text-sm text-dark-100 font-medium">
               {attemptCount} attempt{attemptCount !== 1 ? 's' : ''}
             </div>
           )}
@@ -124,6 +124,7 @@ const InterviewCard = async ({
                   ? `/interview/${interviewId}/feedback`
                   : `/interview/${interviewId}`
               }
+              className="flex items-center"
             >
               {latestFeedback ? "Check Feedback" : "View Interview"}
             </Link>

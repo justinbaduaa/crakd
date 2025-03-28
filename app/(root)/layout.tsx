@@ -13,8 +13,8 @@ const Layout = async ({ children }: { children: ReactNode }) => {
     <div className="root-layout">
       <nav>
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="MockMate Logo" width={38} height={32} />
-          <h2 className="text-white font-poppins font-black">CRAKD</h2>
+          <Image src="/logoBlack.svg" alt="MockMate Logo" width={38} height={32} />
+          <h2 className="font-poppins font-black text-dark-100">CRAKD</h2>
         </Link>
       </nav>
 
