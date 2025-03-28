@@ -12,21 +12,22 @@ import {
 
 async function Home() {
   const user = await getCurrentUser();
+  const userId = user?.id || '';
 
   const [userInterviews, allInterview] = await Promise.all([
-    getInterviewsByUserId(user?.id!),
-    getLatestInterviews({ userId: user?.id! }),
+    getInterviewsByUserId(userId),
+    getLatestInterviews({ userId }),
   ]);
 
-  const hasPastInterviews = userInterviews?.length! > 0;
-  const hasUpcomingInterviews = allInterview?.length! > 0;
+  const hasPastInterviews = (userInterviews && userInterviews.length > 0) || false;
+  const hasUpcomingInterviews = (allInterview && allInterview.length > 0) || false;
 
   return (
     <>
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
           <h2>Get Interview-Ready with AI-Powered Practice & Feedback</h2>
-          <p className="text-lg">
+          <p className="text-lg text-dark-100">
             Practice real interview questions & get instant feedback
           </p>
 
@@ -36,7 +37,7 @@ async function Home() {
         </div>
 
         <Image
-          src="/robot.png"
+          src="/chicken.png"
           alt="robo-dude"
           width={400}
           height={400}
