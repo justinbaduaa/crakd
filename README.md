@@ -1,8 +1,8 @@
-# 🎯 Crakd
+# 🐣 Crakd
 
 An AI-powered mock interview platform where users practice interviews through real-time voice conversations with an AI interviewer. Built with Next.js 15, Firebase, and VAPI for voice AI. The app generates personalized feedback using Google's Gemini model, scoring users across multiple competency areas.
 
-## � Technologies
+## 📦 Technologies
 
 - Next.js 15
 - React 19
