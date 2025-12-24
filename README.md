@@ -1,10 +1,10 @@
 # 🐣 Crakd
 
-An AI-powered mock interview platform where users practice interviews through real-time voice conversations with an AI interviewer. Built with Next.js 15, Firebase, and VAPI for voice AI. The app generates personalized feedback using Google's Gemini model, scoring users across multiple competency areas.
+An AI-powered mock interview platform where users practice interviews through real-time voice conversations with an AI interviewer. Built with Next.js, Firebase, and VAPI for voice AI. The app generates personalized feedback using Google's Gemini model, scoring users across multiple competency areas.
 
 ## 📦 Technologies
 
-- Next.js 15
+- Next.js
 - React 19
 - TypeScript
 - Firebase (Auth + Firestore)
@@ -40,7 +40,7 @@ The core challenge was integrating VAPI for the voice AI component. I created an
 
 For the feedback system, I used the Vercel AI SDK with Google Gemini. After each interview ends, the full transcript gets sent to Gemini with a structured prompt. I used `generateObject()` with a Zod schema to ensure the AI returns properly typed feedback with scores and recommendations.
 
-I implemented Next.js 15 server actions throughout the app instead of traditional API routes. This kept sensitive operations server-side while maintaining type safety between client and server.
+I implemented Next.js server actions throughout the app instead of traditional API routes. This kept sensitive operations server-side while maintaining type safety between client and server.
 
 Finally, I added the dashboard where users can see their past interviews alongside community interviews they can practice with.
 
@@ -57,7 +57,7 @@ Working with VAPI's event system taught me about managing real-time audio stream
 ### 🧠 Structured AI Outputs
 Using `generateObject()` from the Vercel AI SDK showed me how to get reliable, typed responses from LLMs. Instead of parsing free-form text, the schema ensures the AI returns exactly what the app expects.
 
-### ⚡ Next.js 15 Server Actions
+### ⚡ Next.js Server Actions
 Server actions simplified my code significantly. No more creating separate API routes for each operation. The `"use server"` directive makes it clear what runs on the server.
 
 ### 🔄 State Machine Thinking
