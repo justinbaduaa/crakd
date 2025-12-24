@@ -281,9 +281,3 @@ Each interview is evaluated across five competency areas:
 | `npm run lint` | Run ESLint checks |
 
 <br/>
-
----
-
-<p align="center">
-  Built with ☕ and modern web technologies
-</p>
