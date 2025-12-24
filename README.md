@@ -1,148 +1,89 @@
 # 🎯 Crakd
 
-> AI-powered mock interview platform with real-time voice conversations and intelligent feedback
+An AI-powered mock interview platform where users practice interviews through real-time voice conversations with an AI interviewer. Built with Next.js 15, Firebase, and VAPI for voice AI. The app generates personalized feedback using Google's Gemini model, scoring users across multiple competency areas.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
-![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
-![Firebase](https://img.shields.io/badge/Firebase-11-orange?style=flat-square&logo=firebase)
-![TailwindCSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=flat-square&logo=tailwind-css)
+## � Technologies
 
-<br/>
+- Next.js 15
+- React 19
+- TypeScript
+- Firebase (Auth + Firestore)
+- VAPI (Voice AI)
+- Vercel AI SDK
+- Google Gemini
+- Tailwind CSS 4
+- Radix UI
+- React Hook Form
+- Zod
 
-## 📋 Table of Contents
+## 🦄 Features
 
-- [About](#-about)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-- [Project Structure](#-project-structure)
-- [Key Implementation Details](#-key-implementation-details)
-- [Scripts](#-scripts)
+Here's what you can do with Crakd:
 
-<br/>
+- **Create Custom Interviews**: Set up practice interviews for any role or industry. Specify the job title, tech stack, and interview type.
 
-## 🎬 About
+- **Voice Conversations**: Speak naturally with an AI interviewer. The conversation flows like a real interview with real-time speech recognition and responses.
 
-Crakd is a full-stack web application that leverages voice AI to simulate realistic interview experiences. Users can practice interviews for any role or industry, engage in natural voice conversations with an AI interviewer, and receive detailed performance analytics powered by Google's Gemini model.
+- **Receive AI Feedback**: After each session, get detailed scores across five categories: Communication, Technical Knowledge, Problem Solving, Cultural Fit, and Confidence.
 
-### The Problem
+- **Track Your Progress**: View your interview history and see how you've improved over time. Each session is saved with its feedback.
 
-Traditional interview prep lacks realistic practice. Reading questions and mentally rehearsing answers does not replicate the pressure of real-time conversation.
+- **Retake Interviews**: Practice the same interview multiple times to measure your improvement and refine your answers.
 
-### The Solution
+## 👩🏽‍🍳 The Process
 
-Crakd provides an immersive, voice-based interview simulation where users speak naturally with an AI interviewer, receive real-time transcription, and get comprehensive feedback scored across multiple competency areas.
+I started by setting up the authentication system using Firebase Auth with server-side session management. I chose HTTP-only cookies over client-side tokens to prevent XSS attacks and keep the auth flow secure.
 
-<br/>
+Next, I built the interview creation flow where users can specify their target role, select technologies, and choose an interview type. This data gets stored in Firestore and used to generate contextual questions.
 
-## ✨ Features
+The core challenge was integrating VAPI for the voice AI component. I created an Agent component that handles the entire call lifecycle: connecting to VAPI, managing speech events, capturing transcripts in real-time, and gracefully handling disconnections. The tricky part was managing the state transitions between inactive, connecting, active, and finished states while keeping the UI responsive.
 
-| Feature | Description |
-|---------|-------------|
-| 🎙️ **Voice AI Interviews** | Real-time voice conversations powered by VAPI with speech-to-text and text-to-speech |
-| 🧠 **AI-Generated Feedback** | Structured performance analysis using Google Gemini with scoring across 5 categories |
-| 🔐 **Secure Authentication** | Firebase Auth with server-side session management and HTTP-only cookies |
-| 📊 **Progress Tracking** | Historical interview data stored in Firestore with retake capabilities |
-| 🎨 **Modern UI** | Responsive design with dark/light mode support using Radix UI primitives |
-| ⚡ **Server Actions** | Next.js 15 server actions for secure, type-safe data mutations |
+For the feedback system, I used the Vercel AI SDK with Google Gemini. After each interview ends, the full transcript gets sent to Gemini with a structured prompt. I used `generateObject()` with a Zod schema to ensure the AI returns properly typed feedback with scores and recommendations.
 
-<br/>
+I implemented Next.js 15 server actions throughout the app instead of traditional API routes. This kept sensitive operations server-side while maintaining type safety between client and server.
 
-## 🏗️ Architecture
+Finally, I added the dashboard where users can see their past interviews alongside community interviews they can practice with.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Client (React 19)                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │  Auth Forms │  │  Interview  │  │     Voice Agent         │  │
-│  │  (Zod +     │  │  Dashboard  │  │  (VAPI Web SDK)         │  │
-│  │  React Hook │  │             │  │                         │  │
-│  │  Form)      │  │             │  │  • Real-time speech     │  │
-│  └─────────────┘  └─────────────┘  │  • Transcript capture   │  │
-│                                     └─────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Next.js 15 Server Actions                     │
-│  ┌──────────────────────┐  ┌──────────────────────────────────┐ │
-│  │    auth.action.ts    │  │       general.action.ts          │ │
-│  │                      │  │                                  │ │
-│  │  • signUp()          │  │  • createFeedback()              │ │
-│  │  • signIn()          │  │  • getInterviewById()            │ │
-│  │  • signOut()         │  │  • getFeedbackByInterviewId()    │ │
-│  │  • getCurrentUser()  │  │  • getLatestInterviews()         │ │
-│  │  • setSessionCookie()│  │  • getInterviewsByUserId()       │ │
-│  └──────────────────────┘  └──────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-          ┌───────────────────┼───────────────────┐
-          ▼                   ▼                   ▼
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│  Firebase Auth  │  │    Firestore    │  │   Google AI     │
-│                 │  │                 │  │   (Gemini)      │
-│  • Session      │  │  • users        │  │                 │
-│    cookies      │  │  • interviews   │  │  • Feedback     │
-│  • Admin SDK    │  │  • feedback     │  │    generation   │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
-```
+## 📚 What I Learned
 
-<br/>
+Building this project taught me several important concepts:
 
-## 🛠️ Tech Stack
+### 🔐 Server-Side Session Management
+I learned how Firebase Admin SDK creates secure session cookies and why HTTP-only cookies are important for security. Understanding the difference between client-side tokens and server-managed sessions was valuable.
 
-### Frontend
-| Technology | Purpose |
-|------------|---------|
-| **Next.js 15** | React framework with App Router, Server Components, and Turbopack |
-| **React 19** | UI library with latest features including use() hook |
-| **TypeScript 5** | Type safety and enhanced developer experience |
-| **Tailwind CSS 4** | Utility-first styling with JIT compilation |
-| **Radix UI** | Accessible, unstyled UI primitives (Tabs, Labels, Slots) |
-| **React Hook Form + Zod** | Form state management with schema validation |
+### 🎙️ Real-Time Voice Event Handling
+Working with VAPI's event system taught me about managing real-time audio streams. I had to handle events like `call-start`, `speech-start`, `speech-end`, and `message` while keeping the UI in sync.
 
-### Backend & Infrastructure
-| Technology | Purpose |
-|------------|---------|
-| **Firebase Admin SDK** | Server-side authentication and database operations |
-| **Firestore** | NoSQL document database for users, interviews, and feedback |
-| **Next.js Server Actions** | Type-safe server mutations without API routes |
+### 🧠 Structured AI Outputs
+Using `generateObject()` from the Vercel AI SDK showed me how to get reliable, typed responses from LLMs. Instead of parsing free-form text, the schema ensures the AI returns exactly what the app expects.
 
-### AI & Voice
-| Technology | Purpose |
-|------------|---------|
-| **VAPI** | Voice AI platform for real-time speech interactions |
-| **Vercel AI SDK** | Unified interface for LLM providers |
-| **Google Gemini** | Structured output generation for interview feedback |
+### ⚡ Next.js 15 Server Actions
+Server actions simplified my code significantly. No more creating separate API routes for each operation. The `"use server"` directive makes it clear what runs on the server.
 
-<br/>
+### 🔄 State Machine Thinking
+Managing the call status (inactive, connecting, active, finished) taught me to think in terms of state machines. Each state has specific allowed transitions and UI representations.
 
-## 🚀 Getting Started
+## 💭 How It Could Be Improved
 
-### Prerequisites
+- Add more interview types like behavioral, case study, or coding interviews
+- Implement a practice mode without voice for users who prefer typing
+- Add interview templates from real companies
+- Create a leaderboard or community features
+- Add support for uploading resumes to personalize questions
+- Implement spaced repetition for practicing weak areas
+- Add video recording to review body language
 
-- Node.js 18+
-- Firebase project with Firestore and Authentication enabled
-- VAPI account
-- Google AI API key
+## 🚦 Running the Project
 
-### Installation
+To run the project in your local environment, follow these steps:
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/crakd.git
-cd crakd
+1. Clone the repository to your local machine.
+2. Run `npm install` in the project directory to install the required dependencies.
+3. Create a `.env.local` file with your Firebase, VAPI, and Google AI credentials.
+4. Run `npm run dev` to start the development server.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the app.
 
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-```
-
-### Environment Variables
+### Environment Variables Needed
 
 ```env
 # Firebase Client
